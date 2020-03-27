@@ -45,5 +45,7 @@ async def seeMyJobs(ctx):
     await ctx.send(getJobs(str(ctx.author.id)))
 
 @bot.command(name="jobDone", help="removes a job when it is done")
+async def removeJob(ctx, person: str, job):
+    print(job)
 
 bot.run(TOKEN)

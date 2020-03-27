@@ -33,21 +33,31 @@ async def assignJob(ctx, person: str, job: str):
 def getJobs(person):
     file = open(getFilename(person), "r")
 
-    response = "<@!" + person + "> these are the jobs you have to do \n"
     data = file.readlines()
+    response = "```\n"
     for line in data:
-        response += line
+        response += "-" + line
     file.close()
+    response += "```"
+    return response
+
+def getInProgJobs(person):
+    response = "<@!" + person + "> these are the jobs you have to do: \n"
+    response += getJobs(person)
+    return response
+
+def getDoneJobs(person):
+    response = "<@!" + person + "> has done these jobs: \n"
+    response += getJobs(person+"-DONE")
     return response
 
 @bot.command(name="seeJobs", help="gets the jobs for that user")
 async def seeJobs(ctx, person: str):
-    print(ctx)
-    await ctx.send(getJobs(person[3:21]))
+    await ctx.send(getInProgJobs(person[3:21]))
 
 @bot.command(name="seeMyJobs", help="gets you your jobs to do")
 async def seeMyJobs(ctx):
-    await ctx.send(getJobs(str(ctx.author.id)))
+    await ctx.send(getInProgJobs(str(ctx.author.id)))
 
 def jobDone(person, job):
     file = open(getFilename(person), "r")
@@ -77,6 +87,12 @@ async def removeMyJob(ctx, job: str):
 async def removeJob(ctx, person: str, job: str):
     await ctx.send(jobDone(str(person[3:21]), job))
 
+@bot.command(name="doneJobs", help="gets you the jobs done by that person")
+async def doneJobs(ctx, person: str):
+    await ctx.send(getDoneJobs(person[3:21]))
 
+@bot.command(name="myDoneJobs", help="gets you the jobs you have done")
+async def myDoneJobs(ctx):
+    await ctx.send(getDoneJobs(str(ctx.author.id)))
 
 bot.run(TOKEN)
